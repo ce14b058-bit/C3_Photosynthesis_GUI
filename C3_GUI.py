@@ -104,12 +104,12 @@ def plot_results(col2, Input, LeafMassFlux, ObsCi, ObsAnet, Photosynthesis):
         ax.set_ylabel('A (μmol m⁻² s⁻¹)')
         ax.set_title('A/Ci Curve')
         ax.legend()
-        left, center, right = st.columns([0.2,1,0.4])
+        left, center, right = st.columns([0.2,1,0.5])
         with center:
             buf = io.BytesIO()
             fig.savefig(buf, format="png", dpi=500, bbox_inches="tight")
-            st.image(buf, caption="A/Ci", width=900)
-        left,center,right = st.columns([0.25,1,0.25])
+            st.image(buf, caption="A/Ci", width=800)
+        left, center, right = st.columns([0.45,1.2,0.3])
         with center:
             st.latex(r'''\text{Outputs} ''')
             st.dataframe(Photosynthesis, use_container_width=True, height=225)
