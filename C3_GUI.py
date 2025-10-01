@@ -42,9 +42,9 @@ def get_inputs():
         edited_df2 = st.data_editor(df2, num_rows="dynamic", use_container_width=True, key="editor2", height=500)
 
     # Extract user inputs
-    ObsCi = pd.to_numeric(edited_df2['Ci'], errors='coerce').values
-    ObsAnet = pd.to_numeric(edited_df2['Anet'], errors='coerce').values
-
+    ObsCi = pd.to_numeric(edited_df2['Ci'], errors='coerce').dropna().values
+    ObsAnet = pd.to_numeric(edited_df2['Anet'], errors='coerce').dropna().values
+    
     # Build input DataFrame
     Input = pd.DataFrame({
         'Ci': np.linspace(0, ObsCi[-1] + 200, 50),
@@ -134,3 +134,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
