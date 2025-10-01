@@ -1,1 +1,1 @@
-app Url - https://c3photosynthesisgui-lutvnw874dtygcwf4qdxbp.streamlit.app/
+APP Url - c3photosynthesisgui-bchhipnd3ut8aq5wndtdvk.streamlit.app
