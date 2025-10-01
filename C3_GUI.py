@@ -4,6 +4,7 @@ import pandas as pd
 import streamlit as st
 from Optimize import photosynthesis_optimize
 from C3 import Photosynthesis_C3_ACi
+import io
 
 st.set_page_config(layout="wide")
 
@@ -33,9 +34,10 @@ def get_inputs():
     col1, col2 = st.columns([1.45, 1.75])
 
     with col1:
-        st.latex(r'''\text{Climate} ''')
-        edited_df1 = st.data_editor(df1, num_rows='fixed',use_container_width=True, width=300, key="editor", height=150, )
-
+        left,center,right = st.columns([0.3,1,0.3])
+        with center:
+            st.latex(r'''\text{Climate} ''')
+            edited_df1 = st.data_editor(df1, num_rows='fixed',use_container_width=True, width=300, key="editor", height=150, )
         st.latex(r'''\text{Enter Param} ''')
         edited_df2 = st.data_editor(df2, num_rows="dynamic", use_container_width=True, key="editor2", height=500)
 
@@ -90,7 +92,7 @@ def plot_results(col2, Input, LeafMassFlux, ObsCi, ObsAnet, Photosynthesis):
     """Plots A/Cc curve and displays outputs in UI."""
     with col2:
         fig, ax = plt.subplots()
-        fig.set_size_inches(6, 2.5)
+        fig.set_size_inches(5, 2.5)
 
         x = Input['Ci']
         ax.plot(x, (LeafMassFlux['ac']-LeafMassFlux['rd']), c='r', linewidth=1, label='Rubisco')
@@ -102,10 +104,15 @@ def plot_results(col2, Input, LeafMassFlux, ObsCi, ObsAnet, Photosynthesis):
         ax.set_ylabel('A (μmol m⁻² s⁻¹)')
         ax.set_title('A/Ci Curve')
         ax.legend()
-
-        st.pyplot(fig)
-        st.latex(r'''\text{Outputs} ''')
-        st.dataframe(Photosynthesis, use_container_width=True, height=225)
+        left, center, right = st.columns([0.2,1,0.4])
+        with center:
+            buf = io.BytesIO()
+            fig.savefig(buf, format="png", dpi=500, bbox_inches="tight")
+            st.image(buf, caption="A/Ci", width=900)
+        left,center,right = st.columns([0.25,1,0.25])
+        with center:
+            st.latex(r'''\text{Outputs} ''')
+            st.dataframe(Photosynthesis, use_container_width=True, height=225)
 
 
 # -----------------------------
@@ -113,13 +120,16 @@ def plot_results(col2, Input, LeafMassFlux, ObsCi, ObsAnet, Photosynthesis):
 # -----------------------------
 def main():
     edited_df1, edited_df2, ObsCi, ObsAnet, Input, col2 = get_inputs()
-
-    if st.button('Calculate'):
-        Photosynthesis, LeafMassFlux, flags = run_model(Input, edited_df2)
-        plot_results(col2, Input, LeafMassFlux, ObsCi, ObsAnet, Photosynthesis)
+    c1, c2 = st.columns([1.45, 1.75])
+    with c1:
+        l,c,r = st.columns([1,1,1])
+        with c:
+            if st.button('Calculate'):
+                Photosynthesis, LeafMassFlux, flags = run_model(Input, edited_df2)
+                plot_results(col2, Input, LeafMassFlux, ObsCi, ObsAnet, Photosynthesis)
 
         # Display diagnostic flags
-        st.write(f'flags 1: {flags[0]}  \nflags 2: {flags[1]}  \nflags 3: {flags[2]}')
+        #   st.write(f'flags 1: {flags[0]}  \nflags 2: {flags[1]}  \nflags 3: {flags[2]}')
 
 
 if __name__ == "__main__":
